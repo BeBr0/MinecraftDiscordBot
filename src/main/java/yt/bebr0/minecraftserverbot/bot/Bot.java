@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,18 +31,27 @@ public class Bot {
 
     private final JDA jda = JDABuilder.createDefault(Variables.token)
             .addEventListeners(new ChatEvent(), new ReactionAddEvent())
+            .enableIntents(GatewayIntent.GUILD_MEMBERS)
             .build();
-    private final Guild guild = jda.getGuildById(Plugin.getInstance().getConfig().getLong("guild_id"));
+    private final Guild guild;
     private TextChannel channel;
 
     private final List<VerificationManager.Request> requests = new ArrayList<>();
 
     private Bot() {
+        try {
+            jda.awaitReady();
+        }
+        catch (InterruptedException ignored) {}
+
+        guild = jda.getGuildById(Plugin.getInstance().getConfig().getLong("guild_id"));
+
         if (guild == null) {
             Plugin.getInstance().getLogger().severe("Guild is NULL!");
             instance = null;
         }
         else {
+            guild.loadMembers();
             channel = guild.getTextChannelById(Plugin.getInstance().getConfig().getLong("channel_id"));
             if (channel == null) {
                 Plugin.getInstance().getLogger().severe("Channel is NULL!");
@@ -56,6 +66,7 @@ public class Bot {
         VerificationManager.Request request = VerificationManager.createRequest(requester, requestedDiscordId);
 
         if (request != null) {
+
             User user = jda.getUserById(requestedDiscordId);
             Player player = Bukkit.getPlayer(requester);
 
@@ -64,19 +75,20 @@ public class Bot {
             assert guild != null;
 
             if (guild.getMemberById(requestedDiscordId) != null) {
+
                 user.openPrivateChannel()
                         .flatMap(
                                 channel -> channel.sendMessage(
                                         "```Вам был отправлен запрос на верификацию от дискорд сервера '" + guild.getName() + "'." +
-                                                " Запрос создан игроком " + player.displayName() + ". " +
+                                                " Запрос создан игроком " + player.getDisplayName() + ". " +
                                                 "После принятия запроса он получит возможность слать сообщения в чат от вашего имени.\n\n" +
                                                 "\t❗️❗️ ЕСЛИ ВЫ НЕ СОЗДАВАЛИ ДАННЫЙ ЗАПРОС, ТО НАЖМИТЕ КРЕСТИК СНИЗУ ❗️❗\n\n️" +
                                                 "\t✅ Если запрос создали вы, нажмите галочку внизу```"
                                 )
                         ).queue(
                                 message -> {
-                                    message.addReaction(Emoji.fromUnicode("✅"));
-                                    message.addReaction(Emoji.fromUnicode("❌"));
+                                    message.addReaction(Emoji.fromFormatted(":white_check_mark:"));
+                                    message.addReaction(Emoji.fromFormatted(":x:"));
                                 }
                         );
 

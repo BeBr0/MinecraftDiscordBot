@@ -23,7 +23,7 @@ public final class Plugin extends JavaPlugin {
 
         getCommand("registerDiscord").setExecutor(new RegisterCommand());
 
-        System.out.println(Bot.getInstance().toString());
+        Bot.getInstance();
     }
 
     @Override
