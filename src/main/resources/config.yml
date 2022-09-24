@@ -1,6 +1,2 @@
-database:
-  host: localhost
-  port: 3306
-  database: db
-  user: root
-  password: root
+guild_id: 1022929743198302350
+channel_id: 1023194625080557628

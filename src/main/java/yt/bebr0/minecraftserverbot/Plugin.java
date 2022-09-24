@@ -1,6 +1,9 @@
 package yt.bebr0.minecraftserverbot;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import yt.bebr0.minecraftserverbot.command.RegisterCommand;
+import yt.bebr0.minecraftserverbot.events.MinecraftChatEvent;
+import yt.bebr0.minecraftserverbot.events.PlayerFirstTimeJoinEvent;
 
 public final class Plugin extends JavaPlugin {
 
@@ -13,8 +16,11 @@ public final class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        // Plugin startup logic
 
+        getServer().getPluginManager().registerEvents(new MinecraftChatEvent(), this);
+        getServer().getPluginManager().registerEvents(new PlayerFirstTimeJoinEvent(), this);
+
+        getCommand("registerDiscord").setExecutor(new RegisterCommand());
     }
 
     @Override
