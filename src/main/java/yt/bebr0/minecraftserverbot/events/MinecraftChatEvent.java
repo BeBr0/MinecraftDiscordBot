@@ -1,8 +1,9 @@
 package yt.bebr0.minecraftserverbot.events;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import yt.bebr0.minecraftserverbot.bot.Bot;
 import yt.bebr0.minecraftserverbot.data.Database;
 
@@ -14,11 +15,12 @@ import yt.bebr0.minecraftserverbot.data.Database;
 public class MinecraftChatEvent implements Listener {
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncChatEvent event) {
         Database.BotUser botUser = Database.getInstance().getUserByMinecraftID(event.getPlayer().getUniqueId());
 
+        System.out.println(botUser);
         if (botUser != null) {
-            Bot.getInstance().sendMessageToDiscord(botUser.getDiscordId(), botUser.getMinecraftId(), event.getMessage());
+            Bot.getInstance().sendMessageToDiscord(botUser.getDiscordId(), botUser.getMinecraftId(), ((TextComponent) event.message()).content());
         }
     }
 }

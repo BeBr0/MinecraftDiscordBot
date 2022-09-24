@@ -23,12 +23,13 @@ public final class Plugin extends JavaPlugin {
 
         getCommand("registerDiscord").setExecutor(new RegisterCommand());
 
-        Bot.getInstance();
+        Bot.getInstance(); // INITIALIZING BOT
     }
 
     @Override
     public void onDisable() {
         instance = null;
-        // Plugin shutdown logic
+
+        Bot.getInstance().shutdown();
     }
 }

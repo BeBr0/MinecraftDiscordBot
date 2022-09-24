@@ -15,7 +15,7 @@ public class PlayerFirstTimeJoinEvent implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         if (Database.getInstance().getUserByMinecraftID(event.getPlayer().getUniqueId()) == null) {
-            Database.getInstance().writeUser(event.getPlayer().getName(), "");
+            Database.getInstance().writeUser(event.getPlayer().getUniqueId().toString(), "");
         }
     }
 }

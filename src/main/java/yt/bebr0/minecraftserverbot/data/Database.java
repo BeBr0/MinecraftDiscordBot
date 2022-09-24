@@ -19,15 +19,15 @@ public class Database {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:identifier.sqlite");
             statement = connection.createStatement();
+
+            statement.execute("CREATE TABLE IF NOT EXISTS users(uuid TEXT PRIMARY KEY, discord_id TEXT)");
         }
         catch (SQLException ignored) {}
     }
 
     public void writeUser(String uuid, String discordId) {
         try {
-            statement.execute("CREATE TABLE IF NOT EXIST users(uuid TEXT PRIMARY KEY, discord_id TEXT)");
-
-            statement.execute("INSERT OR REPLACE INTO users(" + uuid + ", " + discordId + ")");
+            statement.execute("REPLACE INTO users VALUES('" + uuid + "', '" + discordId + "');");
         }
         catch (SQLException ignored) {}
     }
@@ -35,12 +35,16 @@ public class Database {
     @Nullable
     public BotUser getUserByMinecraftID(UUID minecraftId) {
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE uuid = " + minecraftId.toString());
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM users WHERE uuid = '" + minecraftId.toString() + "';"
+            );
 
             if (resultSet.getFetchSize() != 0) {
                 return new BotUser(resultSet.getString(0), resultSet.getString(1));
             }
-            else return null;
+            else {
+                return null;
+            }
         }
         catch (SQLException e) {
             return null;

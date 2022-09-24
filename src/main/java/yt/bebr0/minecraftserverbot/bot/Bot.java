@@ -170,6 +170,16 @@ public class Bot {
         return false;
     }
 
+    public void shutdown() {
+        jda.shutdown();
+        try {
+            jda.awaitStatus(JDA.Status.SHUTDOWN);
+        }
+        catch (InterruptedException ignored) {}
+
+        instance = null;
+    }
+
     public TextChannel getChannel() {
         return channel;
     }
