@@ -5,11 +5,11 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.*;
 import java.util.UUID;
 
-public class DatabaseWorker {
+public class Database {
 
-    private final static DatabaseWorker instance = new DatabaseWorker();
+    private final static Database instance = new Database();
 
-    public static DatabaseWorker getInstance() {
+    public static Database getInstance() {
         return instance;
     }
 
@@ -17,7 +17,7 @@ public class DatabaseWorker {
     private Connection connection;
     private Statement statement;
 
-    public DatabaseWorker() {
+    public Database() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:identifier.sqlite");
             statement = connection.createStatement();

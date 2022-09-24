@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
 import yt.bebr0.minecraftserverbot.bot.Bot;
-import yt.bebr0.minecraftserverbot.database.DatabaseWorker;
+import yt.bebr0.minecraftserverbot.database.Database;
 
 public class ChatEvent implements EventListener {
     @Override
@@ -15,7 +15,7 @@ public class ChatEvent implements EventListener {
 
             if (messageReceivedEvent.getMessage().getChannel() == Bot.getInstance().getChannel()) {
 
-                DatabaseWorker.BotUser botUser = DatabaseWorker.getInstance().getUserByDiscordID(
+                Database.BotUser botUser = Database.getInstance().getUserByDiscordID(
                         messageReceivedEvent.getAuthor().getId()
                 );
 

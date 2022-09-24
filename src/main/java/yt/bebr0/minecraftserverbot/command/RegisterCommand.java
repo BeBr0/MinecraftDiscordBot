@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import yt.bebr0.minecraftserverbot.database.DatabaseWorker;
+import yt.bebr0.minecraftserverbot.database.Database;
 import yt.bebr0.minecraftserverbot.util.ChatUtil;
 
 /**
@@ -30,8 +30,8 @@ public class RegisterCommand implements CommandExecutor {
             return true;
         }
 
-        DatabaseWorker.getInstance().writeUser(player.getUniqueId().toString(), args[0]);
-        ChatUtil.INSTANCE.sendMessage(player, "Успешно!", true);
+        Database.getInstance().writeUser(player.getUniqueId().toString(), args[0]);
+        ChatUtil.INSTANCE.sendMessage(player, "Вам отправлен запрос на верификацию, нажмите на соответствующую реакцию под сообщением!", true);
 
         // TODO: Spam protection
         return true;

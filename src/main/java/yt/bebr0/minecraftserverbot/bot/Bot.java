@@ -11,7 +11,10 @@ import org.bukkit.entity.Player;
 import yt.bebr0.minecraftserverbot.Plugin;
 import yt.bebr0.minecraftserverbot.Variables;
 import yt.bebr0.minecraftserverbot.bot.events.ChatEvent;
+import yt.bebr0.minecraftserverbot.bot.verification.VerificationManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Bot {
@@ -27,6 +30,8 @@ public class Bot {
             .build();
     private final Guild guild = jda.getGuildById(Plugin.getInstance().getConfig().getLong("guild_id"));
     private TextChannel channel;
+
+    private List<VerificationManager.Request> requests = new ArrayList<>();
 
     private Bot() {
         if (guild == null) {
