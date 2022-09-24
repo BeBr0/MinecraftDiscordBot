@@ -1,0 +1,4 @@
+name: Minecraftserverbot
+version: '${project.version}'
+main: yt.bebr0.minecraftserverbot.Plugin
+api-version: 1.16
