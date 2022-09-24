@@ -36,7 +36,7 @@ public class Bot {
 
     private Bot() {
         if (guild == null) {
-            Plugin.getInstance().getLogger().severe("Guild is NULL!");a
+            Plugin.getInstance().getLogger().severe("Guild is NULL!");
             instance = null;
         }
         else {
