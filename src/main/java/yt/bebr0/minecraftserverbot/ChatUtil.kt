@@ -1,9 +1,8 @@
-package yt.bebr0.minecraftserverbot.util
+package yt.bebr0.minecraftserverbot
 
 import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
-import yt.bebr0.minecraftserverbot.Plugin
 
 
 /**

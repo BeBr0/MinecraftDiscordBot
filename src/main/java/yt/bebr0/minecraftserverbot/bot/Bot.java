@@ -11,8 +11,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import yt.bebr0.minecraftserverbot.Plugin;
 import yt.bebr0.minecraftserverbot.Variables;
-import yt.bebr0.minecraftserverbot.bot.events.ChatEvent;
-import yt.bebr0.minecraftserverbot.bot.verification.VerificationManager;
+import yt.bebr0.minecraftserverbot.bot.event.ChatEvent;
+import yt.bebr0.minecraftserverbot.bot.event.ReactionAddEvent;
+import yt.bebr0.minecraftserverbot.bot.verify.VerificationManager;
+import yt.bebr0.minecraftserverbot.data.Database;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class Bot {
     }
 
     private final JDA jda = JDABuilder.createDefault(Variables.token)
-            .addEventListeners(new ChatEvent())
+            .addEventListeners(new ChatEvent(), new ReactionAddEvent())
             .build();
     private final Guild guild = jda.getGuildById(Plugin.getInstance().getConfig().getLong("guild_id"));
     private TextChannel channel;
@@ -46,12 +48,12 @@ public class Bot {
                 instance = null;
             }
         }
+
+        Plugin.getInstance().getLogger().severe("BOT LAUNCHED!");
     }
 
-    public void requestVerification(UUID requester, String requestedDiscordId) {
+    public boolean requestVerification(UUID requester, String requestedDiscordId) {
         VerificationManager.Request request = VerificationManager.createRequest(requester, requestedDiscordId);
-
-
 
         if (request != null) {
             User user = jda.getUserById(requestedDiscordId);
@@ -79,8 +81,11 @@ public class Bot {
                         );
 
                 requests.add(request);
+                return true;
             }
         }
+
+        return false;
     }
 
     public void sendMessageToMinecraft(String uuid, String userId, String message) {
@@ -130,8 +135,27 @@ public class Bot {
         }
     }
 
-    public JDA getJda() {
-        return jda;
+
+    public void grantVerification(String id) {
+        for (VerificationManager.Request request : requests) {
+            if (request.getRequestedDiscordId().equals(id)) {
+                Bukkit.getPlayer(request.getRequester()).sendMessage("Верификация пройдена успешно!");
+
+                Database.getInstance().writeUser(request.getRequester().toString(), request.getRequestedDiscordId());
+                requests.remove(request);
+                break;
+            }
+        }
+    }
+
+    public boolean isMemberRequested(String discordId) {
+        for (VerificationManager.Request request : requests) {
+            if (request.getRequestedDiscordId().equals(discordId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public TextChannel getChannel() {

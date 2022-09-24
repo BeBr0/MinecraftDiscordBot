@@ -1,7 +1,7 @@
-package yt.bebr0.minecraftserverbot.bot.verification;
+package yt.bebr0.minecraftserverbot.bot.verify;
 
 import org.jetbrains.annotations.Nullable;
-import yt.bebr0.minecraftserverbot.database.Database;
+import yt.bebr0.minecraftserverbot.data.Database;
 
 import java.util.UUID;
 
@@ -35,11 +35,5 @@ public class VerificationManager {
         public String getRequestedDiscordId() {
             return requestedDiscordId;
         }
-    }
-
-    public static enum RequestResponse {
-
-        SUCCESS,
-        REJECTED
     }
 }

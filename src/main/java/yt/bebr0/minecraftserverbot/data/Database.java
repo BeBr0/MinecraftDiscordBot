@@ -1,4 +1,4 @@
-package yt.bebr0.minecraftserverbot.database;
+package yt.bebr0.minecraftserverbot.data;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -13,13 +13,11 @@ public class Database {
         return instance;
     }
 
-
-    private Connection connection;
     private Statement statement;
 
     public Database() {
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:identifier.sqlite");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:identifier.sqlite");
             statement = connection.createStatement();
         }
         catch (SQLException ignored) {}
@@ -29,7 +27,7 @@ public class Database {
         try {
             statement.execute("CREATE TABLE IF NOT EXIST users(uuid TEXT PRIMARY KEY, discord_id TEXT)");
 
-            statement.execute("INSERT INTO users(" + uuid + ", " + discordId + ")");
+            statement.execute("INSERT OR REPLACE INTO users(" + uuid + ", " + discordId + ")");
         }
         catch (SQLException ignored) {}
     }
@@ -64,10 +62,10 @@ public class Database {
         }
     }
 
-    public class BotUser {
+    public static class BotUser {
 
-        private String minecraftId;
-        private String discordId;
+        private final String minecraftId;
+        private final String discordId;
 
         private BotUser(String minecraftId, String discordId) {
             this.minecraftId = minecraftId;
@@ -78,16 +76,8 @@ public class Database {
             return minecraftId;
         }
 
-        public void setMinecraftId(String minecraftId) {
-            this.minecraftId = minecraftId;
-        }
-
         public String getDiscordId() {
             return discordId;
-        }
-
-        public void setDiscordId(String discordId) {
-            this.discordId = discordId;
         }
     }
 }

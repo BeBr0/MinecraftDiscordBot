@@ -5,8 +5,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import yt.bebr0.minecraftserverbot.database.Database;
-import yt.bebr0.minecraftserverbot.util.ChatUtil;
+import yt.bebr0.minecraftserverbot.bot.Bot;
+import yt.bebr0.minecraftserverbot.ChatUtil;
 
 /**
  * File is part of BeBrAPI. Thank you for using it! Also check out my YouTube channel where you can also leave your suggestions! https://www.youtube.com/c/BeBr0
@@ -30,10 +30,22 @@ public class RegisterCommand implements CommandExecutor {
             return true;
         }
 
-        Database.getInstance().writeUser(player.getUniqueId().toString(), args[0]);
-        ChatUtil.INSTANCE.sendMessage(player, "Вам отправлен запрос на верификацию, нажмите на соответствующую реакцию под сообщением!", true);
+        if (Bot.getInstance().requestVerification(player.getUniqueId(), args[0])) {
+            ChatUtil.INSTANCE.sendMessage(
+                    player,
+                    "Вам отправлен запрос на верификацию, нажмите на соответствующую реакцию под сообщением в Discord!",
+                    false
+            );
+        }
+        else {
+            ChatUtil.INSTANCE.sendMessage(
+                    player,
+                    "Отправить запрос не удалось, проверьте правильность ID и находится ли ваш дискорд аккаунт на " +
+                            "сервере.",
+                    true
+            );
+        }
 
-        // TODO: Spam protection
         return true;
     }
 }
