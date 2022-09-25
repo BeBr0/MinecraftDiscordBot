@@ -39,8 +39,8 @@ public class Database {
                     "SELECT * FROM users WHERE uuid = '" + minecraftId.toString() + "';"
             );
 
-            if (resultSet.getFetchSize() != 0) {
-                return new BotUser(resultSet.getString(0), resultSet.getString(1));
+            if (resultSet.next()) {
+                return new BotUser(resultSet.getString(1), resultSet.getString(2));
             }
             else {
                 return null;

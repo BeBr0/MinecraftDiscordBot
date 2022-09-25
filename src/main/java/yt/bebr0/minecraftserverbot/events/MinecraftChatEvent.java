@@ -18,7 +18,6 @@ public class MinecraftChatEvent implements Listener {
     public void onChat(AsyncChatEvent event) {
         Database.BotUser botUser = Database.getInstance().getUserByMinecraftID(event.getPlayer().getUniqueId());
 
-        System.out.println(botUser);
         if (botUser != null) {
             Bot.getInstance().sendMessageToDiscord(botUser.getDiscordId(), botUser.getMinecraftId(), ((TextComponent) event.message()).content());
         }

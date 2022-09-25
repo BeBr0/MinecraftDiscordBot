@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -87,8 +88,8 @@ public class Bot {
                                 )
                         ).queue(
                                 message -> {
-                                    message.addReaction(Emoji.fromFormatted(":white_check_mark:"));
-                                    message.addReaction(Emoji.fromFormatted(":x:"));
+                                    message.addReaction(Emoji.fromFormatted("✅"));
+                                    message.addReaction(Emoji.fromFormatted("❌"));
                                 }
                         );
 
@@ -125,25 +126,25 @@ public class Bot {
     public void sendMessageToDiscord(String userId, String uuid, String text) {
         User user = jda.getUserById(userId);
 
+        Player player = Bukkit.getPlayer(uuid);
+
+        assert player != null;  // NEVER NULL CAUSE CALLED FROM MINECRAFT
+
         if (user != null) {
             channel.sendMessage(
                     "```\n" +
-                            user.getName() + "\n" +
-                            text + "\n" +
+                            user.getName() + "(" + player.getDisplayName() + ")\n" +
+                            "Написал -> " + text + "\n" +
                             "```"
-            );
+            ).queue();
         }
         else {
-            Player player = Bukkit.getPlayer(uuid);
-
-            assert player != null; // NEVER NULL CAUSE CALLED FROM MINECRAFT
-
             channel.sendMessage(
                     "```\n" +
-                            player.displayName() + "\n" +
-                            text + "\n" +
+                            "Без регистрации (" + player.displayName() + ")\n" +
+                            "Написал -> " + text + "\n" +
                             "```"
-            );
+            ).queue();
         }
     }
 
@@ -171,8 +172,8 @@ public class Bot {
     }
 
     public void shutdown() {
-        jda.shutdown();
         try {
+            jda.shutdown();
             jda.awaitStatus(JDA.Status.SHUTDOWN);
         }
         catch (InterruptedException ignored) {}
