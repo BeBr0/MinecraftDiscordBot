@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import yt.bebr0.minecraftserverbot.Plugin;
 import yt.bebr0.minecraftserverbot.Variables;
 import yt.bebr0.minecraftserverbot.bot.event.ChatEvent;
@@ -166,6 +168,15 @@ public class Bot {
         }
     }
 
+    @Nullable
+    public Role getTopRole(String discordId) {
+        Member member = guild.getMemberById(discordId);
+        if (member != null) {
+            return member.getRoles().get(0);
+        }
+
+        return null;
+    }
 
     public void grantVerification(String id) {
         for (VerificationManager.Request request : requests) {

@@ -1,16 +1,12 @@
 package yt.bebr0.minecraftserverbot
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-
-
-/**
- * File is part of BeBrAPI. Thank you for using it! Also check out my YouTube channel where you can also leave your suggestions! https://www.youtube.com/c/BeBr0
- *
- * @author BeBr0
- */
+import yt.bebr0.minecraftserverbot.bot.Bot
+import yt.bebr0.minecraftserverbot.data.Database
 
 object ChatUtil {
     private val signature = "&4[" + Plugin.getInstance().name + "] >>> "
@@ -30,13 +26,41 @@ object ChatUtil {
     }
 
     fun broadcast(msg: String, author: Player) {
+
+        val discordUser = Database.getInstance().getUserByMinecraftID(author.uniqueId)
+        val prefix = Component.text()
+
+        if (discordUser != null) {
+            val role = Bot.getInstance().getTopRole(discordUser.discordId)
+
+            if (role != null) {
+                if (role.color != null) {
+                    prefix.append(
+                        Component.text("[${role.name}]")
+                            .color(TextColor.color(role.color!!.red, role.color!!.green, role.color!!.blue))
+                    ).build()
+                } else {
+                    prefix.append(
+                        Component.text("[${role.name}]")
+                    ).build()
+                }
+            }
+        }
+
+        val resultMessage = Component.text()
+
+        if (prefix.content() != "") {
+            resultMessage
+                .append(prefix)
+                .append(Component.text(" "))
+        }
+
+        resultMessage
+            .append(author.displayName())
+            .append(Component.text(ChatColor.translateAlternateColorCodes('&', ": $msg")))
+
         Plugin.getInstance().server.broadcast(
-            Component.text(
-                ChatColor.translateAlternateColorCodes(
-                    '&',
-                    "&3<${author.displayName}>: &r$msg"
-                )
-            )
+            resultMessage.build()
         )
     }
 }
