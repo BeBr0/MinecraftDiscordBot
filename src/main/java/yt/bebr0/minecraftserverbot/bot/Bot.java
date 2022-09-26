@@ -3,11 +3,11 @@ package yt.bebr0.minecraftserverbot.bot;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,6 +21,8 @@ import yt.bebr0.minecraftserverbot.data.Database;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Bot {
 
@@ -67,7 +69,6 @@ public class Bot {
         VerificationManager.Request request = VerificationManager.createRequest(requester, requestedDiscordId);
 
         if (request != null) {
-
             User user = jda.getUserById(requestedDiscordId);
             Player player = Bukkit.getPlayer(requester);
 
@@ -76,7 +77,6 @@ public class Bot {
             assert guild != null;
 
             if (guild.getMemberById(requestedDiscordId) != null) {
-
                 user.openPrivateChannel()
                         .flatMap(
                                 channel -> channel.sendMessage(
@@ -86,14 +86,26 @@ public class Bot {
                                                 "\t❗️❗️ ЕСЛИ ВЫ НЕ СОЗДАВАЛИ ДАННЫЙ ЗАПРОС, ТО НАЖМИТЕ КРЕСТИК СНИЗУ ❗️❗\n\n️" +
                                                 "\t✅ Если запрос создали вы, нажмите галочку внизу```"
                                 )
-                        ).queue(
+                        )
+                        .queue(
                                 message -> {
-                                    message.addReaction(Emoji.fromFormatted("✅"));
-                                    message.addReaction(Emoji.fromFormatted("❌"));
+                                    message.addReaction(Emoji.fromFormatted("✅")).queue();
+                                    message.addReaction(Emoji.fromFormatted("❌")).queue();
                                 }
                         );
 
                 requests.add(request);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isUserOnServer(String discordId) {
+
+        for (Member member : guild.getMembers()) {
+            if (member.getId().equals(discordId)) {
                 return true;
             }
         }
@@ -126,7 +138,7 @@ public class Bot {
     public void sendMessageToDiscord(String userId, String uuid, String text) {
         User user = jda.getUserById(userId);
 
-        Player player = Bukkit.getPlayer(uuid);
+        Player player = Bukkit.getPlayer(UUID.fromString(uuid));
 
         assert player != null;  // NEVER NULL CAUSE CALLED FROM MINECRAFT
 

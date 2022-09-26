@@ -51,15 +51,18 @@ public class Database {
         }
     }
 
+
     @Nullable
     public BotUser getUserByDiscordID(String discordId) {
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE discord_id = " + discordId);
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE discord_id = '" + discordId + "';");
 
-            if (resultSet.getFetchSize() != 0) {
-                return new BotUser(resultSet.getString(0), resultSet.getString(1));
+            if (resultSet.next()) {
+                return new BotUser(resultSet.getString(1), resultSet.getString(2));
             }
-            else return null;
+            else {
+                return null;
+            }
         }
         catch (SQLException e) {
             return null;
