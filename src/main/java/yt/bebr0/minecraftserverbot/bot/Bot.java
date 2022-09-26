@@ -68,6 +68,12 @@ public class Bot {
     public boolean requestVerification(UUID requester, String requestedDiscordId) {
         VerificationManager.Request request = VerificationManager.createRequest(requester, requestedDiscordId);
 
+        for (VerificationManager.Request req: requests) {
+            if (req.getRequester().equals(requester) || req.getRequestedDiscordId().equals(requestedDiscordId)) {
+                return false;
+            }
+        }
+
         if (request != null) {
             User user = jda.getUserById(requestedDiscordId);
             Player player = Bukkit.getPlayer(requester);
