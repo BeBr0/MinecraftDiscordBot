@@ -3,6 +3,7 @@ package yt.bebr0.minecraftserverbot
 import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 
 /**
@@ -25,6 +26,17 @@ object ChatUtil {
         )
         else player.sendMessage(
             Component.text(ChatColor.translateAlternateColorCodes('&', "$signature&1&l$msg"))
+        )
+    }
+
+    fun broadcast(msg: String, author: Player) {
+        Plugin.getInstance().server.broadcast(
+            Component.text(
+                ChatColor.translateAlternateColorCodes(
+                    '&',
+                    "&3<${author.displayName}>: &r$msg"
+                )
+            )
         )
     }
 }
