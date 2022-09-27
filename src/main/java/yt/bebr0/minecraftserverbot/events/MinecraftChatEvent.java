@@ -4,9 +4,9 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import yt.bebr0.minecraftserverbot.ChatUtil;
 import yt.bebr0.minecraftserverbot.bot.Bot;
 import yt.bebr0.minecraftserverbot.data.Database;
+import yt.bebr0.minecraftserverbot.util.ChatUtil;
 
 public class MinecraftChatEvent implements Listener {
 
@@ -22,7 +22,9 @@ public class MinecraftChatEvent implements Listener {
             );
         }
 
-        ChatUtil.INSTANCE.broadcast(((TextComponent) event.message()).content(), event.getPlayer());
+        TextComponent textComponent = (TextComponent) event.message();
+
+        ChatUtil.getInstance().broadcast(textComponent.content(), event.getPlayer());
 
         event.setCancelled(true);
     }

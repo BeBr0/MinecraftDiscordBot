@@ -24,7 +24,7 @@ public class ChatEvent implements EventListener {
                     Bot.getInstance().sendMessageToMinecraft(
                             botUser.getMinecraftId(),
                             botUser.getDiscordId(),
-                            messageReceivedEvent.getMessage().getContentRaw()
+                            messageReceivedEvent.getMessage().getContentDisplay()
                     );
                 }
             }

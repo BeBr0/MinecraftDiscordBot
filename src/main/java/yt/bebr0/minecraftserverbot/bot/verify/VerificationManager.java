@@ -11,6 +11,7 @@ public class VerificationManager {
     @Nullable
     public static Request createRequest(UUID requester, String requestedDiscordId) {
         if (!Bot.getInstance().isUserOnServer(requestedDiscordId)) {
+            System.out.println("NOT ON SERVER");
             return null;
         }
 
