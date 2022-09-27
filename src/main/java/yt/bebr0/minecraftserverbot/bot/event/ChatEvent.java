@@ -16,6 +16,9 @@ public class ChatEvent implements EventListener {
 
             if (messageReceivedEvent.getMessage().getChannel() == Bot.getInstance().getChannel()) {
 
+                if (messageReceivedEvent.getAuthor().isBot())
+                    return;
+
                 Database.BotUser botUser = Database.getInstance().getUserByDiscordID(
                         messageReceivedEvent.getAuthor().getId()
                 );
@@ -24,6 +27,13 @@ public class ChatEvent implements EventListener {
                     Bot.getInstance().sendMessageToMinecraft(
                             botUser.getMinecraftId(),
                             botUser.getDiscordId(),
+                            messageReceivedEvent.getMessage().getContentDisplay()
+                    );
+                }
+                else {
+                    Bot.getInstance().sendMessageToMinecraft(
+                            "",
+                            messageReceivedEvent.getAuthor().getId(),
                             messageReceivedEvent.getMessage().getContentDisplay()
                     );
                 }

@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import yt.bebr0.minecraftserverbot.Plugin;
@@ -22,7 +24,6 @@ import yt.bebr0.minecraftserverbot.util.ChatUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Bot {
 
@@ -127,11 +128,19 @@ public class Bot {
     }
 
     public void sendMessageToMinecraft(String uuid, String userId, String message) {
-        Player player = Bukkit.getPlayer(UUID.fromString(uuid));
-
-        if (player != null) {
-            ChatUtil.getInstance().broadcast(message, player);
+        if (!uuid.equals("")) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+            guild.retrieveMemberById(userId).queue(member -> {
+                ChatUtil.getInstance().broadcast(message, player.getUniqueId(), Component.text(player.getName()));
+            });
         }
+        else {
+            guild.retrieveMemberById(userId).queue(member -> {
+                ChatUtil.getInstance().broadcast(message, UUID.randomUUID(), Component.text(member.getEffectiveName()));
+            });
+        }
+
+
     }
 
     public void sendMessageToDiscord(String userId, String uuid, String text) {
@@ -142,50 +151,51 @@ public class Bot {
 
         if (!userId.equals("")) {
             jda.retrieveUserById(userId).queue(user -> {
-                if (user != null) {
-                    channel.sendMessage(
-                            "```\n" +
-                                    user.getName() + "(" + player.getDisplayName() + ")\n" +
-                                    "Написал -> " + text + "\n" +
-                                    "```"
-                    ).queue();
-                }
-                else {
-                    channel.sendMessage(
-                            "```\n" +
-                                    "Без регистрации (" + player.getDisplayName() + ")\n" +
-                                    "Написал -> " + text + "\n" +
-                                    "```"
-                    ).queue();
-                }
+                textToDiscordAs(user.getName(), player.getName(), text);
             });
         }
+        else {
+            textToDiscordAs("Без регистрации", player.getName(), text);
+        }
     }
+
+    public void textToDiscordAs(String userName, String playerName, String message) {
+        channel.sendMessage(
+                "```\n" +
+                        userName + " (" + playerName + ")\n" +
+                        "Написал: " + message + "\n" +
+                        "```"
+        ).queue();
+
+        // TODO add time to message
+    }
+
 
     @Nullable
     public Role getTopRole(String discordId) {
-        Member member = guild.retrieveMemberById(discordId).complete();
-
-        if (member == null) {
-            return null;
+        for (Member member: guild.loadMembers().get()) {
+            if (member.getId().equals(discordId)) {
+                return member.getRoles().get(0);
+            }
         }
 
-        return member.getRoles().get(0);
+        return null;
     }
 
     public void grantVerification(String id) {
+
         for (VerificationManager.Request request : requests) {
             if (request.getRequestedDiscordId().equals(id)) {
-                Player player = Bukkit.getPlayer(request.getRequester());
+                OfflinePlayer player = Bukkit.getOfflinePlayer(request.getRequester());
 
-                assert player != null; // CHECKED PREVIOUSLY
-                player.sendMessage("Верификация пройдена успешно!");
+                if (player.getPlayer() != null) {
+                    player.getPlayer().sendMessage("Верификация пройдена успешно!");
+                }
 
                 jda.retrieveUserById(request.getRequestedDiscordId()).queue(user -> {
                     guild.retrieveMemberById(request.getRequestedDiscordId()).queue(member -> {
-                        guild.modifyNickname(member, user.getName() + " (" + player.getDisplayName() + ")").queue();
+                        guild.modifyNickname(member, user.getName() + " (" + player.getName() + ")").queue();
                     });
-
                 });
 
                 Database.getInstance().writeUser(request.getRequester().toString(), request.getRequestedDiscordId());
@@ -213,5 +223,16 @@ public class Bot {
 
     public TextChannel getChannel() {
         return channel;
+    }
+
+    public void rejectVerification(String id) {
+        for (VerificationManager.Request request : requests) {
+            if (request.getRequestedDiscordId().equals(id)) {
+                ChatUtil.getInstance().sendMessage(Bukkit.getPlayer(request.getRequester()), "Верификация отклонена!", false);
+                requests.remove(request);
+                break;
+            }
+        }
+
     }
 }

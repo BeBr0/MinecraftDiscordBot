@@ -1,6 +1,7 @@
 package yt.bebr0.minecraftserverbot.bot.event;
 
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -19,7 +20,16 @@ public class ReactionAddEvent implements EventListener {
                     PrivateChannel privateChannel = (PrivateChannel) messageReactionAddEvent.getChannel();
 
                     if (privateChannel.getUser().getId().equals(messageReactionAddEvent.getUserId())) {
-                        Bot.getInstance().grantVerification(privateChannel.getUser().getId());
+                        if (messageReactionAddEvent.getEmoji().equals(Emoji.fromFormatted("✅"))) {
+                            Bot.getInstance().grantVerification(privateChannel.getUser().getId());
+                        }
+                        else {
+                            Bot.getInstance().rejectVerification(privateChannel.getUser().getId());
+                        }
+
+                        messageReactionAddEvent.retrieveMessage().queue(message -> {
+                            message.delete().queue();
+                        });
                     }
                 }
             }

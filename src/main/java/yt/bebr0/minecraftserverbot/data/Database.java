@@ -17,7 +17,7 @@ public class Database {
 
     public Database() {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:identifier.sqlite");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:bot_db.sqlite");
             statement = connection.createStatement();
 
             statement.execute("CREATE TABLE IF NOT EXISTS users(uuid TEXT PRIMARY KEY, discord_id TEXT)");
@@ -27,6 +27,8 @@ public class Database {
 
     public void writeUser(String uuid, String discordId) {
         try {
+            statement.execute("DELETE FROM users WHERE discord_id = " + discordId);
+
             statement.execute("REPLACE INTO users VALUES('" + uuid + "', '" + discordId + "');");
         }
         catch (SQLException ignored) {}

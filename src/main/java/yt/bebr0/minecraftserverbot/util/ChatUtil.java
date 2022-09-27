@@ -2,6 +2,7 @@ package yt.bebr0.minecraftserverbot.util;
 
 import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -9,7 +10,8 @@ import org.bukkit.entity.Player;
 import yt.bebr0.minecraftserverbot.Plugin;
 import yt.bebr0.minecraftserverbot.bot.Bot;
 import yt.bebr0.minecraftserverbot.data.Database;
-import net.kyori.adventure.text.TextComponent;
+
+import java.util.UUID;
 
 public class ChatUtil {
 
@@ -36,21 +38,25 @@ public class ChatUtil {
         );
     }
 
-    public void broadcast(String msg, Player author) {
+    public void broadcast(String msg, UUID uuid, Component name) {
 
-        Database.BotUser discordUser = Database.getInstance().getUserByMinecraftID(author.getUniqueId());
+        Database.BotUser discordUser = Database.getInstance().getUserByMinecraftID(uuid);
 
         TextComponent.Builder resultMessage = Component.text();
 
-        // TODO CHECK REGISTRATION
-        if (discordUser != null) {
+        if (discordUser != null && !discordUser.getDiscordId().equals("")) {
+
             Role role = Bot.getInstance().getTopRole(discordUser.getDiscordId());
 
             if (role != null) {
                 if (role.getColor() != null) {
                     resultMessage.append(
                             Component.text("[" + role.getName() + "] ")
-                                    .color(TextColor.color(role.getColor().getRed(), role.getColor().getGreen(), role.getColor().getBlue()))
+                                    .color(TextColor.color(
+                                            role.getColor().getRed(),
+                                            role.getColor().getGreen(),
+                                            role.getColor().getBlue()
+                                    ))
                     );
                 } else {
 
@@ -62,7 +68,7 @@ public class ChatUtil {
         }
 
         resultMessage
-                .append(author.displayName())
+                .append(name)
                 .append(Component.text(ChatColor.translateAlternateColorCodes('&', ": " + msg)));
 
         for (Player player : Plugin.getInstance().getServer().getOnlinePlayers()) {

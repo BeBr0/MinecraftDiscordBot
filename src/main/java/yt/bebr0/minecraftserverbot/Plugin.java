@@ -14,6 +14,8 @@ public final class Plugin extends JavaPlugin {
         return instance;
     }
 
+    // TODO Tab prefix
+
     @Override
     public void onEnable() {
         instance = this;

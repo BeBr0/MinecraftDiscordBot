@@ -21,10 +21,17 @@ public class MinecraftChatEvent implements Listener {
                     ((TextComponent) event.message()).content()
             );
         }
+        else {
+            Bot.getInstance().sendMessageToDiscord(
+                    "",
+                    event.getPlayer().getUniqueId().toString(),
+                    ((TextComponent) event.message()).content()
+            );
+        }
 
         TextComponent textComponent = (TextComponent) event.message();
 
-        ChatUtil.getInstance().broadcast(textComponent.content(), event.getPlayer());
+        ChatUtil.getInstance().broadcast(textComponent.content(), event.getPlayer().getUniqueId(), event.getPlayer().displayName());
 
         event.setCancelled(true);
     }
