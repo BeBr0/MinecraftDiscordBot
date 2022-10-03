@@ -6,10 +6,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +19,7 @@ import yt.bebr0.minecraftserverbot.Plugin;
 import yt.bebr0.minecraftserverbot.Variables;
 import yt.bebr0.minecraftserverbot.bot.event.ChatEvent;
 import yt.bebr0.minecraftserverbot.bot.event.ReactionAddEvent;
+import yt.bebr0.minecraftserverbot.bot.event.RoleUpdateEvent;
 import yt.bebr0.minecraftserverbot.bot.verify.VerificationManager;
 import yt.bebr0.minecraftserverbot.data.Database;
 import yt.bebr0.minecraftserverbot.util.ChatUtil;
@@ -34,11 +37,12 @@ public class Bot {
     }
 
     private final JDA jda = JDABuilder.createDefault(Variables.token)
-            .addEventListeners(new ChatEvent(), new ReactionAddEvent())
+            .addEventListeners(new ChatEvent(), new ReactionAddEvent(), new RoleUpdateEvent())
             .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             .build();
     private final Guild guild;
     private TextChannel channel;
+    private TextChannel commandChannel;
 
     private final List<VerificationManager.Request> requests = new ArrayList<>();
 
@@ -59,6 +63,13 @@ public class Bot {
             channel = guild.getTextChannelById(Plugin.getInstance().getConfig().getLong("channel_id"));
             if (channel == null) {
                 Plugin.getInstance().getLogger().severe("Channel is NULL!");
+                instance = null;
+            }
+
+            commandChannel = guild.getTextChannelById(Plugin.getInstance().getConfig().getLong("command_channel_id"));
+
+            if (commandChannel == null) {
+                Plugin.getInstance().getLogger().severe("Command channel is NULL!");
                 instance = null;
             }
         }
@@ -115,6 +126,12 @@ public class Bot {
         }
 
         return false;
+    }
+
+    public void announceMessage(String message) {
+        for (Player player : Plugin.getInstance().getServer().getOnlinePlayers()) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c[!!!]: &r" + message));
+        }
     }
 
     public boolean isUserOnServer(String discordId) {
@@ -234,5 +251,9 @@ public class Bot {
             }
         }
 
+    }
+
+    public TextChannel getCommandChannel() {
+        return commandChannel;
     }
 }

@@ -38,6 +38,13 @@ public class ChatEvent implements EventListener {
                     );
                 }
             }
+            else if (messageReceivedEvent.getMessage().getChannel() == Bot.getInstance().getCommandChannel()) {
+                if (messageReceivedEvent.getMessage().getContentRaw().startsWith("!announce")) {
+                    String message = messageReceivedEvent.getMessage().getContentRaw().replace("!announce", "");
+
+                    Bot.getInstance().announceMessage(message);
+                }
+            }
         }
     }
 }
