@@ -30,6 +30,7 @@ public class Database {
             statement.execute("DELETE FROM users WHERE discord_id = " + discordId);
 
             statement.execute("REPLACE INTO users VALUES('" + uuid + "', '" + discordId + "');");
+
         }
         catch (SQLException ignored) {}
     }

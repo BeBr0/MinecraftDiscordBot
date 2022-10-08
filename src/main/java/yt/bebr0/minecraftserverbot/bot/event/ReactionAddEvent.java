@@ -22,14 +22,18 @@ public class ReactionAddEvent implements EventListener {
                     if (privateChannel.getUser().getId().equals(messageReactionAddEvent.getUserId())) {
                         if (messageReactionAddEvent.getEmoji().equals(Emoji.fromFormatted("✅"))) {
                             Bot.getInstance().grantVerification(privateChannel.getUser().getId());
-                        }
-                        else {
-                            Bot.getInstance().rejectVerification(privateChannel.getUser().getId());
-                        }
 
-                        messageReactionAddEvent.retrieveMessage().queue(message -> {
-                            message.delete().queue();
-                        });
+                            messageReactionAddEvent.retrieveMessage().queue(message -> {
+                                message.delete().queue();
+                            });
+                        }
+                        else if (messageReactionAddEvent.getEmoji().equals(Emoji.fromFormatted("❌"))) {
+                            Bot.getInstance().rejectVerification(privateChannel.getUser().getId());
+
+                            messageReactionAddEvent.retrieveMessage().queue(message -> {
+                                message.delete().queue();
+                            });
+                        }
                     }
                 }
             }

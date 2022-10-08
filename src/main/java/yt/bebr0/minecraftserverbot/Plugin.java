@@ -24,8 +24,6 @@ public final class Plugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerFirstTimeJoinEvent(), this);
 
         getCommand("registerDiscord").setExecutor(new RegisterCommand());
-
-        Bot.getInstance(); // INITIALIZING BOT
     }
 
     @Override

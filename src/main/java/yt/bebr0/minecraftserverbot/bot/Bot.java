@@ -30,9 +30,13 @@ import java.util.UUID;
 
 public class Bot {
 
-    private static Bot instance = new Bot();
+    private static Bot instance = null;
 
     public static Bot getInstance() {
+        if (instance == null) {
+            instance = new Bot();
+        }
+
         return instance;
     }
 
@@ -82,7 +86,6 @@ public class Bot {
 
         for (VerificationManager.Request req: requests) {
             if (req.getRequester().equals(requester) || req.getRequestedDiscordId().equals(requestedDiscordId)) {
-                System.out.println("ALREADY REQUESTED");
                 return false;
             }
         }
@@ -117,14 +120,7 @@ public class Bot {
                 requests.add(request);
                 return true;
             }
-            else {
-                System.out.println("NOT A MEMBER");
-            }
         }
-        else {
-            System.out.println("REQUEST IS NULL");
-        }
-
         return false;
     }
 
